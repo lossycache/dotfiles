@@ -31,10 +31,23 @@ return {
       nerd_font_variant = 'mono'
     },
 
+    signature = {
+      enabled = true,                              -- turn on signature help
+      trigger = {
+        enabled = true,                            -- allow auto-show
+        show_on_trigger_character = true,          -- e.g. '('
+        show_on_insert_on_trigger_character = true -- when re-entering insert after '('
+        -- show_on_keyword = false,  -- keep off so it only shows around calls
+      },
+      window = {
+        show_documentation = true, -- (optional) only show the signature, not docs
+      },
+    },
+
     completion = {
       -- ... other completion options
       documentation = {
-        auto_show = true,       -- Enable documentation preview on hover
+        auto_show = true,         -- Enable documentation preview on hover
         auto_show_delay_ms = 200, -- Optional: Adjust the delay before showing documentation
       },
     },
@@ -42,7 +55,7 @@ return {
     -- Default list of enabled providers defined so that you can extend it
     -- elsewhere in your config, without redefining it, due to `opts_extend`
     sources = {
-      default = { 'lsp', 'path', 'snippets', 'buffer' },
+      default = { 'lsp', 'path', 'buffer' },
     },
 
     -- Blink.cmp uses a Rust fuzzy matcher by default for typo resistance and significantly better performance

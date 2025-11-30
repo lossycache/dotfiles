@@ -11,7 +11,7 @@ return {
             ["af"] = { query = "@function.outer", desc = "Select outer part of a function definition" },
             ["if"] = { query = "@function.inner", desc = "Select inner part of a function definition" },
           }
-        }
+        },
       }
     })
   end

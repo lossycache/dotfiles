@@ -3,21 +3,19 @@ return {
   dependencies = { 'saghen/blink.cmp' },
   lazy = false,
   config = function()
-    local lspconfig = require('lspconfig')
-    local util = require('lspconfig/util')
     local lspSettings = require('ram.lsp_settings')
     lspSettings.setup()
     local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-    lspconfig.eslint.setup({
+    vim.lsp.config.eslint = {
       on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = true
         lspSettings.on_attach(client, bufnr)
       end,
       capabilities = capabilities,
-    })
+    }
 
-    lspconfig.vtsls.setup({
+    vim.lsp.config.vtsls = {
       on_attach = lspSettings.on_attach,
       settings = {
         typescript = {
@@ -30,20 +28,20 @@ return {
         }
       },
       capabilities = capabilities,
-    })
+    }
 
-    lspconfig.terraformls.setup({
-      on_attach = lspSettings.on_attach,
-      capabilities = capabilities,
-    })
-
-    lspconfig.buf_ls.setup {
-      root_dir = util.root_pattern("buf.yaml", ".git"),
+    vim.lsp.config.terraformls = {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
     }
 
-    lspconfig.lua_ls.setup {
+    vim.lsp.config.buf_ls = {
+      root_markers = { "buf.yaml", ".git" },
+      on_attach = lspSettings.on_attach,
+      capabilities = capabilities,
+    }
+
+    vim.lsp.config.lua_ls = {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
       on_init = function(client)
@@ -80,22 +78,38 @@ return {
     }
 
     -- require('go').setup({})
-    lspconfig.gopls.setup {
-      cmd = { "gopls", "serve" },
+    vim.lsp.config.gopls = {
+      cmd = { "dd-gopls" },
+      cmd_env = {
+        GOPLS_DISABLE_MODULE_LOADS = "1",
+      },
       capabilities = capabilities,
       filetypes = { "go", "gomod" },
-      root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+      root_markers = { "go.work", "go.mod" },
       settings = {
         gopls = {
           semanticTokens = true,
-          env = { GOFLAGS = "-tags=integration,integration_db_only,tools" },
+          buildFlags = { "-tags=" }, -- empty tag set means don't include any files that have build constraints
           analyses = {
             unusedparams = true,
           },
+          completeUnimported = false,
           staticcheck = true,
         },
       },
       on_attach = lspSettings.on_attach
     }
+
+    vim.lsp.config.basedpyright = {
+      on_attach = lspSettings.on_attach,
+      capabilities = capabilities,
+    }
+
+    vim.lsp.config.clangd = {
+      on_attach = lspSettings.on_attach,
+      capabilities = capabilities,
+    }
+
+    vim.lsp.enable({ 'terraformls', 'buf_ls', 'lua_ls', 'gopls', 'basedpyright', 'clangd' })
   end
 }
