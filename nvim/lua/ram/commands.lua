@@ -139,3 +139,48 @@ c("OpenGithub", function(opts)
 end, {
   range = true,
 })
+
+local function get_go_pkg_from_go_list(opts)
+  opts = opts or {}
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    print("No file in buffer")
+    return
+  end
+
+  -- Directory of the current file
+  local dir = vim.fn.fnamemodify(file, ":p:h")
+
+  -- Save current working directory
+  local old_cwd = vim.loop.cwd()
+
+  -- Change to the file's directory
+  vim.loop.chdir(dir)
+
+  -- Run `go list` for this directory
+  local output = vim.fn.system("go list -f '{{.ImportPath}}' .")
+
+  -- Restore previous working directory
+  vim.loop.chdir(old_cwd)
+
+  if vim.v.shell_error ~= 0 then
+    print("go list failed: " .. vim.fn.trim(output))
+    return
+  end
+
+  local pkg = vim.fn.trim(output)
+  if pkg == "" then
+    print("Empty import path from go list")
+    return
+  end
+
+  print(pkg)
+  if opts.bang and pkg then
+    vim.fn.setreg("+", pkg)
+  end
+  return pkg
+end
+
+c("GoPkg", function(opts)
+  get_go_pkg_from_go_list(opts)
+end, { bang = true })
