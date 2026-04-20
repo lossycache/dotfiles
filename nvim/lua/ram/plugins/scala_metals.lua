@@ -18,17 +18,27 @@ return {
       client.server_capabilities.semanticTokensProvider = nil
       lspSettings.on_attach(client, bufnr)
     end
+    metals_config.find_root_dir_max_project_nesting = 3
     metals_config.init_options.statusBarProvider = "off"
     metals_config.capabilities = require('blink.cmp').get_lsp_capabilities()
+    metals_config.cmd_env = {
+      JAVA_HOME = "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+    }
     metals_config.settings = {
-      javaHome = "/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home",
+      javaHome = "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+      defaultBspToBuildTool = true,
       serverProperties = {
         "-Xmx16G",
         "-XX:MaxMetaspaceSize=4G",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+        "--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
       },
-      bloopJvmProperties = {
-        "-Xmx16G"
-      }
     }
     return metals_config
   end,

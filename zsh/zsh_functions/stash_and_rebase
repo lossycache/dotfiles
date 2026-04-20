@@ -1,0 +1,22 @@
+stash_and_rebase() {
+  STASH_RESULT=$(git stash push -m "autostash for rebase")
+
+  # Check if anything was actually stashed
+  STASHED=false
+  if [[ "$STASH_RESULT" != "No local changes to save" ]]; then
+      STASHED=true
+      echo "Changes stashed: $STASH_RESULT"
+  else
+      echo "No changes to stash."
+  fi
+
+  # Continue with fetch and rebase
+  git fetch
+  git rebase origin/prod
+
+  # Restore stashed changes if applicable
+  if $STASHED; then
+      echo "Restoring stashed changes..."
+      git stash pop
+  fi
+}

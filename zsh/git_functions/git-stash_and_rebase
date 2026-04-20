@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+local STASH_RESULT
+STASH_RESULT=$(git stash push -m "autostash for rebase")
+
+local STASHED=false
+if [[ "$STASH_RESULT" != "No local changes to save" ]]; then
+  STASHED=true
+  echo "Changes stashed: $STASH_RESULT"
+else
+  echo "No changes to stash."
+fi
+
+# Fetch and rebase onto origin/<default>
+git fetch_default > /dev/null
+local DEFAULT
+DEFAULT=$(git default_branch)
+if [[ -z "$DEFAULT" ]]; then
+  echo "Could not detect origin's default branch." >&2
+  return 1
+fi
+git rebase "origin/${DEFAULT}"
+
+if $STASHED; then
+  echo "Restoring stashed changes..."
+  git stash pop
+fi
