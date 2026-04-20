@@ -88,7 +88,6 @@ return {
       root_markers = { "go.work", "go.mod" },
       settings = {
         gopls = {
-          semanticTokens = true,
           buildFlags = { "-tags=" }, -- empty tag set means don't include any files that have build constraints
           analyses = {
             unusedparams = true,
@@ -103,6 +102,19 @@ return {
     vim.lsp.config.basedpyright = {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
+      before_init = function(_, config)
+        local venv = os.getenv("VIRTUAL_ENV")
+        if venv then
+          config.settings.basedpyright.analysis.pythonPath = venv .. "/bin/python"
+        end
+      end,
+      settings = {
+        basedpyright = {
+          analysis = {
+            typeCheckingMode = "off",
+          },
+        },
+      },
     }
 
     vim.lsp.config.clangd = {

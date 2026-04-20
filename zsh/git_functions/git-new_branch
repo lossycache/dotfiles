@@ -1,0 +1,11 @@
+#!/bin/zsh
+
+DEFAULT_BRANCH=$(git default_branch)
+BRANCH="${1}"
+if [[ -z "$DEFAULT_BRANCH" ]]; then
+  echo "Could not detect origin's default branch." >&2
+  exit 1
+fi
+
+echo "📦 Detected default branch: $DEFAULT_BRANCH"
+git switch --create "ram.goli/${BRANCH}" "origin/${DEFAULT_BRANCH}"

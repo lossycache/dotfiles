@@ -10,7 +10,7 @@ return {
       sync_install = false, -- to install languages async
       highlight = {
         enable = true,
-        disable = { "go" },
+        -- disable = { "go" },
       },
       indent = {
         enable = true,

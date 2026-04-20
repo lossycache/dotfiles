@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+DEFAULT_BRANCH=$(git default_branch)
+git switch --detach "origin/${DEFAULT_BRANCH}"

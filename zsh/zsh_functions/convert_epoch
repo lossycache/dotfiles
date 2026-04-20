@@ -1,0 +1,63 @@
+convert_epoch() {
+  # Usage: convert_epoch <epoch> [-u]
+  # <epoch> may be in seconds (10 digits), milliseconds (13), or microseconds (16).
+  if [ $# -lt 1 ]; then
+    echo "Usage: convert_epoch <epoch_seconds|ms|us> [-u]"
+    return 1
+  fi
+
+  ts="$1"; shift
+  use_utc=false
+  [ "${1:-}" = "-u" ] && use_utc=true
+
+  # Prefer GNU date (gdate). If current 'date' is GNU, use it; else try gdate; else BSD.
+  date_cmd="date"
+  if $date_cmd --version >/dev/null 2>&1; then
+    : # date is GNU
+  elif command -v gdate >/dev/null 2>&1; then
+    date_cmd="gdate"
+  fi
+
+  # Normalize epoch to "seconds[.fraction]" for GNU; BSD will use -jf "%s"
+  epoch_s="$ts"
+  frac=""
+  case "${#ts}" in
+    10) : ;;                                   # seconds
+    13) epoch_s="${ts:0:-3}"; frac=".${ts: -3}";;      # milliseconds
+    16) epoch_s="${ts:0:-6}"; frac=".${ts: -6}";;      # microseconds
+    *)  # Heuristic: big = ms/us, small = seconds
+        if [ "$ts" -ge 1000000000000 ] 2>/dev/null; then
+          # assume ms if 12–14 digits, us if 15–17
+          if [ "${#ts}" -ge 15 ]; then epoch_s="${ts:0:-6}"; frac=".${ts: -6}";
+          else epoch_s="${ts:0:-3}"; frac=".${ts: -3}";
+          fi
+        fi
+        ;;
+  esac
+
+  # Trim trailing zeros in fraction to avoid "123." cases
+  if [ -n "$frac" ]; then
+    frac="$(printf "%s" "$frac" | sed 's/0\+$//; s/\.$//')"
+  fi
+
+  if $date_cmd --version >/dev/null 2>&1; then
+    # GNU date path
+    if $use_utc; then
+      $date_cmd -u -d "@${epoch_s}${frac}" "+%Y-%m-%d %H:%M:%S %Z"
+    else
+      $date_cmd -d "@${epoch_s}${frac}" "+%Y-%m-%d %H:%M:%S %Z"
+    fi
+  else
+    # BSD/macOS fallback
+    if [ -n "$frac" ]; then
+      # BSD `date` doesn't accept fractional @epoch; drop the fraction for display
+      :
+    fi
+    if $use_utc; then
+      date -u -jf "%s" "$epoch_s" "+%Y-%m-%d %H:%M:%S %Z"
+    else
+      date -jf "%s" "$epoch_s" "+%Y-%m-%d %H:%M:%S %Z"
+    fi
+  fi
+}
+

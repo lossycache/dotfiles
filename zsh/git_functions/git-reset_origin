@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# This script will hard reset the current branch to match its upstream branch.
+# ⚠️ WARNING: This discards all uncommitted and unpushed changes!
+
+# Exit immediately if a command fails
+set -e
+
+# Make sure we’re on a branch with an upstream set
+upstream=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || true)
+
+if [ -z "$upstream" ]; then
+  echo "❌ No upstream branch configured for the current branch."
+  echo "   You can set one with: git branch --set-upstream-to origin/<branch>"
+  exit 1
+fi
+
+echo "🔄 Fetching latest changes from remote..."
+git fetch_branch "${upstream}"
+
+echo "⚠️ Resetting current branch to upstream: $upstream"
+git reset --hard "origin/${upstream}"
+
+echo "✅ Done. Current branch now matches $upstream"
+

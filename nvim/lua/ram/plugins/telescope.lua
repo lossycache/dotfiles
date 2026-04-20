@@ -16,6 +16,15 @@ return {
           ["<C-e>"] = "close",
         },
       },
+      layout_strategy = "vertical",
+      layout_config = {
+        vertical = {
+          preview_height = 0.6, -- preview takes top 60%
+        },
+        width = 0.9,
+        height = 0.9,
+        prompt_position = "bottom",
+      },
     },
     pickers = {
       find_files = {

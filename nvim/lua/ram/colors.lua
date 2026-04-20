@@ -14,3 +14,6 @@ Color.new('yellow', '#f0c674')
 
 -- Constant
 Group.new('@lsp.mod.readonly.go', colors.red, nil, styles.italic)
+
+vim.api.nvim_set_hl(0, "@keyword.return", { link = "@keyword" })
+vim.api.nvim_set_hl(0, "@keyword.import.go", { link = "@keyword" })

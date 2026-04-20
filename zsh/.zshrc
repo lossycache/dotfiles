@@ -53,8 +53,7 @@ autoload -U $fpath[1]/*(.:t)
 # Single quotes are needed to ensure that the prompt isn't evaluted when it's set.
 setopt prompt_subst 
 NEWLINE=$'\n'
-PROMPT='%B%F{cyan}%~%F{reset_color}%b$(print_git_branch)%F{yellow}$(is_git_dirty)%F{reset_color}${NEWLINE}> '
-# PROMPT='%B%F{cyan}%~%F{reset_color}%b%F{yellow}$(is_git_dirty)%F{reset_color}${NEWLINE}> '
+PROMPT='%(?..%F{red}⏺ )%B%F{cyan}%~%F{reset_color}%b$(print_git_branch)%F{yellow}$(is_git_dirty)%F{reset_color}${NEWLINE}> '
 
 # !! should not execute the last command, only print it to the edit buffer
 setopt hist_verify
@@ -68,3 +67,7 @@ export PGPASSFILE="${XDG_CONFIG_HOME}/.pgpass"
 # export GOROOT
 export GOROOT=$(go env GOROOT)
 
+# zsh autosuggestions
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+bindkey '^A' autosuggest-accept # accept the whole line
+bindkey '^W' forward-word # accept the current word

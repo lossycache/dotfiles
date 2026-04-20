@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+# Prints the default branch name for origin, e.g. "main" or "master"
+git symbolic-ref --quiet --short refs/remotes/origin/HEAD | sed -E 's@.*/?origin/@@'
+

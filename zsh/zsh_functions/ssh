@@ -1,0 +1,7 @@
+ssh() {
+  kitty @ set-tab-title "⚡ ${@[-1]}"
+  TERM=xterm command ssh "$@"
+  local exit_code=$?
+  kitty @ set-tab-title ""
+  return $exit_code
+}

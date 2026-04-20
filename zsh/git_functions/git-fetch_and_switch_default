@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+git fetch_default && git switch_default
