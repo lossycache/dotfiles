@@ -35,3 +35,11 @@ keymap("n", "<leader>cl", "<CMD>ccl<CR>", opts);
 keymap("n", "<leader>b", "<CMD>GitBlame<CR>", opts)
 
 keymap("n", "<leader>md", "<CMD>m +1<CR>", opts)
+
+vim.keymap.set('n', '<leader>cc', function()
+  local file = vim.fn.expand('%:.')
+  local line = vim.fn.line('.')
+  local col = vim.fn.col('.')
+  vim.fn.setreg('+', file .. ':' .. line .. ':' .. col)
+  vim.notify('Copied ' .. file .. ':' .. line .. ' to clipboard')
+end, { desc = 'Copy file:line for Claude Code' })
