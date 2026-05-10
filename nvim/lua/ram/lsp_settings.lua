@@ -77,10 +77,46 @@ M.lsp_format_document = function(bufnr)
   )
 end
 
+local workflow_cache = {}
+
+local function goto_workflow()
+  local word = vim.fn.expand('<cword>')
+  local workflow_name = word:match('^ExecuteChildWorkflow(.+)$')
+
+  if not workflow_name then
+    vim.notify('Not on an ExecuteChildWorkflow call', vim.log.levels.WARN)
+    return
+  end
+
+  local results = workflow_cache[workflow_name]
+  if not results then
+    local pattern = string.format('^func \\([^)]+\\) %s\\b', workflow_name)
+    results = vim.fn.systemlist(
+      string.format('rg --vimgrep --glob "*.go" --glob "!*.pb.go" %q', pattern)
+    )
+    if #results > 0 then
+      workflow_cache[workflow_name] = results
+    end
+  end
+
+  if #results == 0 then
+    vim.notify('No workflow implementation found: ' .. workflow_name, vim.log.levels.WARN)
+    return
+  end
+
+  vim.fn.setqflist({}, 'r', { title = workflow_name, lines = results })
+  if #results == 1 then
+    vim.cmd('cc 1')
+  else
+    require('telescope.builtin').quickfix()
+  end
+end
+
 M.lsp_keymaps = function(bufnr)
   local opts = { noremap = true, silent = true }
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "gd", "<cmd>:Telescope lsp_definitions<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
+  vim.keymap.set('n', 'gW', goto_workflow, { buffer = bufnr, noremap = true, silent = true })
   vim.api.nvim_buf_set_keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover({ border = 'rounded' })<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
   -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
