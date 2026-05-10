@@ -1,5 +1,10 @@
 #!/bin/zsh
 
 # Prints the default branch name for origin, e.g. "main" or "master"
-git symbolic-ref --quiet --short refs/remotes/origin/HEAD | sed -E 's@.*/?origin/@@'
+# Falls back to querying the remote if the local symref is dangling.
+DEFAULT=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed -E 's@.*/?origin/@@')
+if [[ -z "$DEFAULT" ]]; then
+  DEFAULT=$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p')
+fi
+echo "$DEFAULT"
 
