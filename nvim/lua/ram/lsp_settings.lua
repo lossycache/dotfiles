@@ -30,13 +30,15 @@ M.setup = function()
 
   vim.diagnostic.config(config)
 
-  vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-    border = "rounded",
-  })
+  local function with_rounded_border(handler)
+    return function(err, result, ctx, handler_config)
+      handler_config = vim.tbl_deep_extend("force", { border = "rounded" }, handler_config or {})
+      return handler(err, result, ctx, handler_config)
+    end
+  end
 
-  vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-    border = "rounded",
-  })
+  vim.lsp.handlers["textDocument/hover"] = with_rounded_border(vim.lsp.handlers.hover)
+  vim.lsp.handlers["textDocument/signatureHelp"] = with_rounded_border(vim.lsp.handlers.signature_help)
 end
 
 M.lsp_highlight_document = function(bufnr)
@@ -80,7 +82,7 @@ end
 M.lsp_keymaps = function(bufnr)
   local opts = { noremap = true, silent = true }
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "gd", "<cmd>:Telescope lsp_definitions<CR>", opts)
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover({ border = 'rounded' })<CR>", opts)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
   -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)

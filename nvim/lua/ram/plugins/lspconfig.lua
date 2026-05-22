@@ -7,15 +7,15 @@ return {
     lspSettings.setup()
     local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-    vim.lsp.config.eslint = {
+    vim.lsp.config('eslint', {
       on_attach = function(client, bufnr)
         client.server_capabilities.documentFormattingProvider = true
         lspSettings.on_attach(client, bufnr)
       end,
       capabilities = capabilities,
-    }
+    })
 
-    vim.lsp.config.vtsls = {
+    vim.lsp.config('vtsls', {
       on_attach = lspSettings.on_attach,
       settings = {
         typescript = {
@@ -28,20 +28,20 @@ return {
         }
       },
       capabilities = capabilities,
-    }
+    })
 
-    vim.lsp.config.terraformls = {
+    vim.lsp.config('terraformls', {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
-    }
+    })
 
-    vim.lsp.config.buf_ls = {
+    vim.lsp.config('buf_ls', {
       root_markers = { "buf.yaml", ".git" },
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
-    }
+    })
 
-    vim.lsp.config.lua_ls = {
+    vim.lsp.config('lua_ls', {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
       on_init = function(client)
@@ -75,10 +75,10 @@ return {
       settings = {
         Lua = {}
       }
-    }
+    })
 
     -- require('go').setup({})
-    vim.lsp.config.gopls = {
+    vim.lsp.config('gopls', {
       cmd = { "dd-gopls" },
       cmd_env = {
         GOPLS_DISABLE_MODULE_LOADS = "1",
@@ -97,9 +97,9 @@ return {
         },
       },
       on_attach = lspSettings.on_attach
-    }
+    })
 
-    vim.lsp.config.basedpyright = {
+    vim.lsp.config('basedpyright', {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
       before_init = function(_, config)
@@ -115,12 +115,12 @@ return {
           },
         },
       },
-    }
+    })
 
-    vim.lsp.config.clangd = {
+    vim.lsp.config('clangd', {
       on_attach = lspSettings.on_attach,
       capabilities = capabilities,
-    }
+    })
 
     vim.lsp.enable({ 'terraformls', 'buf_ls', 'lua_ls', 'gopls', 'basedpyright', 'clangd' })
   end
