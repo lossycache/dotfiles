@@ -1,0 +1,9 @@
+function print_command_start_time() {
+  (( ${+SHELL_COMMAND_TIMESTAMPS} )) || return 0
+
+  typeset -g _SHELL_COMMAND_TIMESTAMPS_ACTIVE=1
+
+  local command_started_at
+  command_started_at=$(command date "+%Y-%m-%d %H:%M:%S %Z")
+  print -P "%K{magenta}%F{white}%B command started: ${command_started_at} %b%f%k"
+}

@@ -55,6 +55,10 @@ setopt prompt_subst
 NEWLINE=$'\n'
 PROMPT='%(?..%F{red}⏺ )%B%F{cyan}%~%F{reset_color}%b$(print_git_branch)%F{yellow}$(is_git_dirty)%F{reset_color}${NEWLINE}> '
 
+autoload -Uz add-zsh-hook
+add-zsh-hook preexec print_command_start_time
+add-zsh-hook precmd print_command_end_time
+
 # !! should not execute the last command, only print it to the edit buffer
 setopt hist_verify
 
